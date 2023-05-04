@@ -1,0 +1,171 @@
+<body>
+    <table border="1">
+        <input type="hidden" id="userid" />
+        <tr>
+            <td>Name:-</td>
+            <td><input type="text" id="name"></td>
+        </tr>
+        <tr>
+            <td>Email:-</td>
+            <td><input type="email" id="email"></td>
+        </tr>
+        <tr>
+            <td>Password:-</td>
+            <td><input type="text" id="password"></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="button" value="Submit" id="save" onclick="viewData()">
+           <input type="button" value="Edit" id="edit" onclick="edit()"></td>
+        </tr>
+    </table>
+    <br/>
+    <br/>
+    <table border="1">
+        <tr>
+            <td>Id</td>
+            <td>Name</td>
+            <td>Email</td>
+            <td>Password</td>
+            <td>Action</td>
+        </tr>
+        <tbody id="record">
+
+        </tbody>
+    </table>
+</body>
+
+<script>
+    let data = [];
+    printData();
+
+    function viewData() {
+        let name = document.getElementById("name").value;
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
+
+        let obj = {
+            userId : Math.floor(Math.random() * 1000),
+            userName: name,
+            userEmail: email,
+            userPassword: password
+        }
+        if(localStorage.getItem("crudTask") === null || localStorage.getItem("crudTask") === undefined)
+        {
+            data.push(obj);
+            localStorage.setItem("crudTask" , JSON.stringify(data));
+        }
+        else{
+            let val = JSON.parse(localStorage.getItem("crudTask"));
+
+            val.push(obj);
+            localStorage.setItem("crudTask" , JSON.stringify(val));
+        }
+        
+
+        alert("record added successfully");
+
+        document.getElementById("name").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("password").value = "";
+
+        printData();
+    }
+
+    function printData(){
+        let val = JSON.parse(localStorage.getItem("crudTask"));
+
+        document.getElementById("edit").style.display = "none";
+
+        let tbl = "";
+
+        for(let i in val){
+            tbl += 
+            `
+                <tr>
+                    <td>${val[i].userId}</td>
+                    <td>${val[i].userName}</td>  
+                    <td>${val[i].userEmail}</td>    
+                    <td>${val[i].userPassword}</td> 
+                    <td><button onclick="deleteData(${val[i].userId})">Delete</button>
+                    <button onclick="editData(${val[i].userId})">Edit</button></td>   
+                </tr>
+            `
+        }
+        document.getElementById("record").innerHTML = tbl;
+    }
+
+    function deleteData(id){
+        // console.log(id)
+
+        let val = JSON.parse(localStorage.getItem("crudTask"));
+
+        // console.log(val);
+
+        for(let i in val){
+            if(val[i].userId == id){
+                // console.log(val[i]);
+
+                val.splice(i, 1);
+            }
+            localStorage.setItem("crudTask", JSON.stringify(val));
+        }
+
+        alert("deleted successfully");
+        printData();
+    }
+
+
+    function editData(id){
+        // alert("edit data successfully");
+
+        document.getElementById("save").style.display = "none";
+
+        document.getElementById("edit").style.display = "block";
+
+        let val = JSON.parse(localStorage.getItem("crudTask"));
+
+        // console.log(val);
+
+        for (let i in val){
+            if(val[i].userId == id){
+                document.getElementById("name").value = val[i].userName;
+                document.getElementById("email").value = val[i].userEmail;
+                document.getElementById("password").value = val[i].userPassword;
+                document.getElementById("userid").value = val[i].userId;
+            }
+        }
+
+    }
+
+    function edit(){
+        let userid = document.getElementById("userid").value;
+        let name = document.getElementById("name").value;
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
+
+        let val = JSON.parse(localStorage.getItem("crudTask"));
+
+        for(let i in val){
+            if(val[i].userId == userid){
+                val[i].userName = name;
+                val[i].userEmail = email;
+                val[i].userPassword = password;
+            }
+            localStorage.setItem("crudTask" , JSON.stringify(val));
+        }
+        alert("Record edited successfully");
+        document.getElementById("userid").value = "";
+        document.getElementById("name").value = "";
+        document.getElementById("email").value = "";
+        document.getElementById("password").value = "";
+
+        document.getElementById("save").style.display = "block";
+        document.getElementById("edit").style.display = "none";
+
+        printData();
+    }
+
+    
+
+
+</script>
